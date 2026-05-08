@@ -1,3 +1,46 @@
 spring:
   application:
     name: BookMyDine
+
+  profiles:
+    active: ${ENV:local}
+
+  # PostgreSQL datasource configuration
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  # JPA / Hibernate configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+# Application server configuration
+server:
+  port: 8080
+
+# Spring Boot Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+  endpoint:
+    health:
+      show-details: never
+
+  info:
+    env:
+      enabled: true
+
+# Custom actuator info endpoint data
+# Accessible at: /actuator/info
+info:
+  app:
+    name: BookMyDine
+    description: Restaurant booking System
+    version: 1.0.0
