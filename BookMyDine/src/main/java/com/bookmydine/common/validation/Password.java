@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Pattern;
 
 import java.lang.annotation.*;
 
+/**
+ * This is password validator
+ */
 @Documented
 //@Constraint(validatedBy = PasswordValidator.class)
 @Target({ElementType.FIELD})
