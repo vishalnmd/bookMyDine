@@ -2,6 +2,8 @@ package com.bookmydine.common.exception;
 
 import com.bookmydine.common.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(
         MethodArgumentNotValidException.class
@@ -90,4 +94,24 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.CONFLICT)
             .body(response);
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+        ResourceNotFoundException ex,
+        HttpServletRequest request
+    ) {
+        ErrorResponse response =
+            ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .errors(List.of("Resource not found"))
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND.value())
+            .body(response);
+    }
+
 }
