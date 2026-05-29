@@ -10,4 +10,6 @@ public interface IUserService {
     UserResponse addUser(UserRequest userRequest);
 
     List<UserResponse> getAllUsers();
+
+    UserResponse getUserById(Long id);
 }
