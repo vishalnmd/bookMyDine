@@ -12,4 +12,6 @@ public interface IUserService {
     List<UserResponse> getAllUsers();
 
     UserResponse getUserById(Long id);
+
+    UserResponse updateUser(long id, UserRequest userRequest);
 }

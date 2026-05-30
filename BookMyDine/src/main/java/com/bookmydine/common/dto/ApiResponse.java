@@ -16,7 +16,7 @@ public class ApiResponse<T> {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    private Integer status = HttpStatus.OK.value();
+    private HttpStatus status = HttpStatus.OK;
 
     private String message = "Success";
 

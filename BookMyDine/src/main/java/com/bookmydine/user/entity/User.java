@@ -29,7 +29,7 @@ public class User extends BaseEntity {
 
     private String lastName;
 
-    @Column(unique = true)
+    @Column(unique = true,updatable = false)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
