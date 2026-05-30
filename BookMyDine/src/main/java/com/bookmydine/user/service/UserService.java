@@ -1,6 +1,8 @@
 package com.bookmydine.user.service;
 
+import com.bookmydine.common.enums.UserStatus;
 import com.bookmydine.common.exception.ResourceAlreadyExistsException;
+import com.bookmydine.common.exception.ResourceAlreadyUpdatedException;
 import com.bookmydine.common.exception.ResourceNotFoundException;
 import com.bookmydine.user.dto.UserRequest;
 import com.bookmydine.user.dto.UserResponse;
@@ -11,7 +13,6 @@ import com.bookmydine.user.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -54,11 +55,27 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse updateUser(long id, UserRequest userRequest) {
+    public UserResponse updateUserById(long id, UserRequest userRequest) {
         User user = userRepository.findById(id)
             .map(u -> UserMapper.updatedUser(u, userRequest))
             .orElseThrow(() -> new ResourceNotFoundException(String.format("User not found for id : %d", id)));
 
+        userRepository.save(user);
+
+        return UserMapper.toResponse(user);
+    }
+
+    @Override
+    public UserResponse deleteUserById(long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(String.format("User not found for id : %d", id)));
+
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new ResourceAlreadyUpdatedException(String.format("User with id %d is already deleted", id));
+        }
+
+        // update user status = Deleted
+        user.setStatus(UserStatus.DELETED);
         userRepository.save(user);
 
         return UserMapper.toResponse(user);

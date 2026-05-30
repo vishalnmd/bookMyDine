@@ -2,6 +2,7 @@ package com.bookmydine.user.entity;
 
 import com.bookmydine.common.entity.BaseEntity;
 import com.bookmydine.common.enums.Roles;
+import com.bookmydine.common.enums.UserStatus;
 import com.bookmydine.common.validation.Password;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -29,7 +30,7 @@ public class User extends BaseEntity {
 
     private String lastName;
 
-    @Column(unique = true,updatable = false)
+    @Column(unique = true, updatable = false)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
@@ -42,5 +43,6 @@ public class User extends BaseEntity {
 
     private String phoneNumber;
 
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 }
