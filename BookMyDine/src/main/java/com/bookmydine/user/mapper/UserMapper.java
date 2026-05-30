@@ -24,4 +24,13 @@ public class UserMapper {
             .role(Roles.valueOf(user.getRole()))
             .build();
     }
+
+    public static User updatedUser(User user, UserRequest userRequest) {
+        user.setFirstName(userRequest.getFirstName()!=null ? userRequest.getFirstName() : user.getFirstName());
+        user.setLastName(userRequest.getLastName()!=null ? userRequest.getLastName() : user.getLastName());
+        user.setRole(userRequest.getRole()!=null ? userRequest.getRole() : user.getRole());
+        user.setPhoneNumber(userRequest.getPhoneNumber()!=null ? userRequest.getPhoneNumber() : user.getPhoneNumber());
+
+        return user;
+    }
 }

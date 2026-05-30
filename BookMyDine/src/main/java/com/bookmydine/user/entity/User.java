@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true,updatable = false)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
