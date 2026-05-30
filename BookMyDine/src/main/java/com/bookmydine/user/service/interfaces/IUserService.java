@@ -16,4 +16,6 @@ public interface IUserService {
     UserResponse updateUserById(long id, UserRequest userRequest);
 
     UserResponse deleteUserById(long id);
+
+    List<UserResponse> getAllActiveUsers();
 }

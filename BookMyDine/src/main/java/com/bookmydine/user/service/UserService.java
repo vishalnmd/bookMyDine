@@ -80,4 +80,14 @@ public class UserService implements IUserService {
 
         return UserMapper.toResponse(user);
     }
+
+    @Override
+    public List<UserResponse> getAllActiveUsers() {
+        List<UserResponse> userResponses = new ArrayList<>();
+        List<User> users = userRepository.findAllByStatus(UserStatus.ACTIVE);
+        for (User user : users) {
+            userResponses.add(UserMapper.toResponse(user));
+        }
+        return userResponses;
+    }
 }

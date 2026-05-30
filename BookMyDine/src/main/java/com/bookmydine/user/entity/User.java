@@ -39,10 +39,13 @@ public class User extends BaseEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private Roles role;
 
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    @Column(nullable = false, length = 10)
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
 }
