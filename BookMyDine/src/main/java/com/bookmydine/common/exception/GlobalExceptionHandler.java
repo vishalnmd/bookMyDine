@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity
-            .status(HttpStatus.CONFLICT)
+            .status(response.getStatus())
             .body(response);
     }
 
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity
-            .status(HttpStatus.NOT_FOUND)
+            .status(response.getStatus())
             .body(response);
     }
 
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity
-            .status(HttpStatus.OK.value())
+            .status(response.getStatus())
             .body(response);
     }
 

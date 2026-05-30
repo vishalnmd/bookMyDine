@@ -86,4 +86,18 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/users/active")
+    public ResponseEntity<?> getAllActiveUsers() {
+        LOG.info("Start getAllActiveUsers");
+        List<UserResponse> userResponseList = userService.getAllActiveUsers();
+        ApiResponse<List<UserResponse>> response = ApiResponse.<List<UserResponse>>builder()
+            .message(String.format("Successfully retrieved %d users", userResponseList.size()))
+            .status(HttpStatus.OK)
+            .timestamp(LocalDateTime.now())
+            .data(userResponseList)
+            .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 }
