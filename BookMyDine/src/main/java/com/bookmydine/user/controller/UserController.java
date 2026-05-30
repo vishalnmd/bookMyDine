@@ -41,7 +41,7 @@ public class UserController {
         LOG.info("Start getAllUsers");
         List<UserResponse> userResponseList = userService.getAllUsers();
         ApiResponse<List<UserResponse>> response = ApiResponse.<List<UserResponse>>builder()
-            .message(String.format("Successfully retrieved %d users",userResponseList.size()))
+            .message(String.format("Successfully retrieved %d users", userResponseList.size()))
             .status(HttpStatus.OK)
             .timestamp(LocalDateTime.now())
             .data(userResponseList)
@@ -63,15 +63,27 @@ public class UserController {
     }
 
     @PatchMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable @NotNull(message = "Invalid Id") Long id, @RequestBody UserRequest request) {
-        LOG.info("Start updateUser:{}", id);
+    public ResponseEntity<?> updateUserById(@PathVariable @NotNull(message = "Invalid Id") Long id, @RequestBody UserRequest request) {
+        LOG.info("Start updateUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
             .message("User successfully updated")
             .status(HttpStatus.OK)
             .timestamp(LocalDateTime.now())
-            .data(userService.updateUser(id, request))
+            .data(userService.updateUserById(id, request))
             .build();
-        return  ResponseEntity.status(response.getStatus()).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable @NotNull(message = "Invalid Id") Long id) {
+        LOG.info("Start deleteUserById:{}", id);
+        ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
+            .message("User successfully deleted")
+            .status(HttpStatus.OK)
+            .timestamp(LocalDateTime.now())
+            .data(userService.deleteUserById(id))
+            .build();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

@@ -19,13 +19,8 @@ public class GlobalExceptionHandler {
 
     private final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(
-        MethodArgumentNotValidException.class
-    )
-    public ResponseEntity<ErrorResponse> handleValidationException(
-        MethodArgumentNotValidException ex,
-        HttpServletRequest request
-    ) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
         List<String> errors = ex
             .getBindingResult()
@@ -40,7 +35,7 @@ public class GlobalExceptionHandler {
         ErrorResponse response =
             ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST)
                 .message(ex.getMessage())
                 .errors(errors)
                 .path(request.getRequestURI())
@@ -52,15 +47,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidEnum(
-        HttpMessageNotReadableException ex,
-        HttpServletRequest request
-    ) {
+    public ResponseEntity<ErrorResponse> handleInvalidEnum(HttpMessageNotReadableException ex, HttpServletRequest request) {
 
         ErrorResponse response =
             ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST)
                 .message(ex.getMessage())
                 .errors(List.of(ex.getMostSpecificCause().getMessage()))
                 .path(request.getRequestURI())
@@ -72,16 +64,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse>
-    handleDataIntegrityViolationException(
-        ResourceAlreadyExistsException ex,
-        HttpServletRequest request
-    ) {
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(ResourceAlreadyExistsException ex, HttpServletRequest request) {
 
         ErrorResponse response =
             ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
+                .status(HttpStatus.CONFLICT)
                 .message(ex.getMessage())
                 .errors(List.of(
                     "Resource already exists"
@@ -95,21 +83,34 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-        ResourceNotFoundException ex,
-        HttpServletRequest request
-    ) {
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
         ErrorResponse response =
             ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
+                .status(HttpStatus.NOT_FOUND)
                 .message(ex.getMessage())
                 .errors(List.of("Resource not found"))
                 .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity
-            .status(HttpStatus.NOT_FOUND.value())
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+
+    @ExceptionHandler(ResourceAlreadyUpdatedException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyUpdatedException(ResourceAlreadyUpdatedException ex, HttpServletRequest request) {
+        ErrorResponse response =
+            ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.OK)
+                .message(ex.getMessage())
+                .errors(List.of("Resource already updated"))
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+            .status(HttpStatus.OK.value())
             .body(response);
     }
 
