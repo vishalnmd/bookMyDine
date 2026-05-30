@@ -1,6 +1,6 @@
 package com.bookmydine.user.service;
 
-import com.bookmydine.common.enums.Roles;
+import com.bookmydine.common.exception.ResourceAlreadyExistsException;
 import com.bookmydine.common.exception.ResourceNotFoundException;
 import com.bookmydine.user.dto.UserRequest;
 import com.bookmydine.user.dto.UserResponse;
@@ -11,6 +11,7 @@ import com.bookmydine.user.service.interfaces.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,13 +30,12 @@ public class UserService implements IUserService {
     @Override
     public UserResponse addUser(UserRequest userRequest) {
         User user = UserMapper.toEntity(userRequest);
-        userRepository.save(user);
-        return UserResponse.builder()
-            .id(user.getId())
-            .name(user.getName())
-            .email(user.getEmail())
-            .role(Roles.valueOf(user.getRole()))
-            .build();
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceAlreadyExistsException(String.format("Email already exists : %s", userRequest.getEmail()));
+        }
+        return UserMapper.toResponse(user);
     }
 
     @Override

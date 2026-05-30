@@ -4,7 +4,6 @@ import com.bookmydine.common.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -72,10 +71,10 @@ public class GlobalExceptionHandler {
             .body(response);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse>
     handleDataIntegrityViolationException(
-        DataIntegrityViolationException ex,
+        ResourceAlreadyExistsException ex,
         HttpServletRequest request
     ) {
 
@@ -83,7 +82,7 @@ public class GlobalExceptionHandler {
             ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
-                .message("Database constraint violation")
+                .message(ex.getMessage())
                 .errors(List.of(
                     "Resource already exists"
                 ))

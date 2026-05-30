@@ -28,7 +28,7 @@ public class UserController {
         UserResponse userResponse = userService.addUser(request);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
             .message("User Created Successfully")
-            .status(HttpStatus.OK.value())
+            .status(HttpStatus.CREATED.value())
             .timestamp(LocalDateTime.now())
             .data(userResponse)
             .build();
