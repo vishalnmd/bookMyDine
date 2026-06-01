@@ -7,6 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 public class UserResponse {
     private Long id;
@@ -14,6 +15,6 @@ public class UserResponse {
     private String lastName;
     private String email;
     private Roles role;
-
     private String phoneNumber;
+
 }
