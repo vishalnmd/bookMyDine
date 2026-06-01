@@ -19,6 +19,12 @@ public class StartupLogger implements CommandLineRunner {
     @Value("${spring.datasource.username}")
     private String dbUsername;
 
+    @Value("${baseUrl}")
+    private String baseUrl;
+
+    @Value("${springdoc.swagger-ui.path}")
+    private String swaggerUrl;
+
     @Override
     public void run(String... args) {
 
@@ -31,6 +37,7 @@ public class StartupLogger implements CommandLineRunner {
         System.out.println("Database URL: " + dbUrl);
         System.out.println("Database User: " + dbUsername);
 
+        System.out.println("Swagger URL: " + baseUrl + swaggerUrl );
         System.out.println("====================================\n");
     }
 }
