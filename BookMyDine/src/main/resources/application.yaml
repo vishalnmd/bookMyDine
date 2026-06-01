@@ -44,3 +44,14 @@ info:
     name: BookMyDine
     description: Restaurant booking System
     version: 1.0.0
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    doc-expansion: list
+  show-actuator: true

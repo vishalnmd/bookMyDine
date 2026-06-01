@@ -2,3 +2,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+baseUrl: http://localhost:8080

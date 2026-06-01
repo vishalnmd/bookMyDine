@@ -4,6 +4,11 @@ import com.bookmydine.common.dto.ApiResponse;
 import com.bookmydine.user.dto.UserRequest;
 import com.bookmydine.user.dto.UserResponse;
 import com.bookmydine.user.service.interfaces.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +23,25 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "APIs for managing users")
 public class UserController {
     public static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private final IUserService userService;
 
     @PostMapping("/user")
+    @Operation(summary = "Create a new user", description = "Register a new user in the system")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201",
+            description = "User created successfully",
+            content = @Content(schema = @Schema(implementation = ApiResponse.class))
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "409",
+            description = "Email already exists"
+        )
+    })
     public ResponseEntity<?> addUser(
         @Valid @RequestBody UserRequest request) {
         UserResponse userResponse = userService.addUser(request);
@@ -37,6 +55,13 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @Operation(summary = "Get all users", description = "Retrieve list of all registered users")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Users retrieved successfully"
+        )
+    })
     public ResponseEntity<?> getAllUsers() {
         LOG.info("Start getAllUsers");
         List<UserResponse> userResponseList = userService.getAllUsers();
