@@ -1,5 +1,6 @@
 package com.bookmydine.user.service.interfaces;
 
+import com.bookmydine.auth.dto.UserAuthResponse;
 import com.bookmydine.user.dto.UserRequest;
 import com.bookmydine.user.dto.UserResponse;
 
@@ -18,4 +19,7 @@ public interface IUserService {
     UserResponse deleteUserById(long id);
 
     List<UserResponse> getAllActiveUsers();
+
+    UserAuthResponse getUserByEmail(String email);
+
 }
