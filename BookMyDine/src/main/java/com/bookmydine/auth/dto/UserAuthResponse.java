@@ -8,6 +8,7 @@ import lombok.ToString;
 
 @Setter
 @Getter
+@ToString
 @Builder
 public class UserAuthResponse {
     private String email;

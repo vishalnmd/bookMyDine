@@ -3,4 +3,8 @@ spring:
     hibernate:
       ddl-auto: update
 
+  app:
+    jwtSecret: thisismysecrectkeyaksadjasdwhichIdontwanttoShareWithAnyone
+    jwtExpirations: 600000
+
 baseUrl: http://localhost:8080

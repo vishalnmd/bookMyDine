@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter{
+    private final Logger log = LoggerFactory.getLogger(AuthTokenFilter.class);
 
 	@Autowired
 	private JwtService jwtUtils;
@@ -33,8 +34,7 @@ public class AuthTokenFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-
-		logger.debug("AuthTokenFilter called for URI : {}",request.getRequestURI());
+		logger.info("AuthTokenFilter called for URI : {}",request.getRequestURI());
 
 		try {
 			String jwt = parseJwt(request);
@@ -54,16 +54,14 @@ public class AuthTokenFilter extends OncePerRequestFilter{
 				SecurityContextHolder.getContext().setAuthentication(authentication	);
 			}
 		} catch (Exception e) {
-			logger.error("cannot set User Authentication :{}",e);
+			logger.error("cannot set User Authentication :{}",e.toString());
 		}
-
 		filterChain.doFilter(request, response);
-
 	}
 
 	private String parseJwt(HttpServletRequest request) {
 		String jwt = jwtUtils.getJwtFromHeader(request);
-		logger.debug("AuthTokenFilter.java: {} ",jwt);
+		logger.info("AuthTokenFilter.java: {} ",jwt);
 
 		return jwt;
 	}

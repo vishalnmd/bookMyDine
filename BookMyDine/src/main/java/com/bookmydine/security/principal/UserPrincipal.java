@@ -4,6 +4,8 @@ import com.bookmydine.auth.dto.UserAuthResponse;
 import com.bookmydine.user.dto.UserRequest;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPrincipal implements UserDetails {
+    private final Logger logger = LoggerFactory.getLogger(UserPrincipal.class);
     private UserAuthResponse user;
 
     @Override
@@ -23,11 +26,13 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
+        logger.info("Password for user: {}", user.getPassword());
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
+        logger.info("Username for user: {}", user.getEmail()    );
         return user.getEmail();
     }
 }
