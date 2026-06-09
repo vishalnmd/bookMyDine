@@ -1,12 +1,19 @@
 package com.bookmydine.security.filter;
 
 import java.io.IOException;
+import java.security.Key;
+import java.util.List;
 
 import com.bookmydine.security.service.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,38 +33,37 @@ public class AuthTokenFilter extends OncePerRequestFilter{
 	@Autowired
 	private JwtService jwtUtils;
 
-	@Autowired
-	private UserDetailsService userDetailsService;
-
 	private final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		logger.info("AuthTokenFilter called for URI : {}",request.getRequestURI());
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
 
-		try {
-			String jwt = parseJwt(request);
-			if(jwt!=null && jwtUtils.validateJWTToken(jwt)) {
-				String username = jwtUtils.getUsernameFromJWTToken(jwt);
+        try {
+            String jwt = parseJwt(request);
+            if (jwt != null && jwtUtils.validateJWTToken(jwt)) {
 
-                //need to update this logic
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                Claims claims = jwtUtils.getClaimsFromJWTToken(jwt);
 
-				UsernamePasswordAuthenticationToken authentication =
-						new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+                String email = claims.getSubject();
+                String role = claims.get("roles").toString();
 
-				logger.debug("Roles from JWT :{}",userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        List.of(
+                            new SimpleGrantedAuthority(role)
+                        )
+                    );
 
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request) );
-
-				SecurityContextHolder.getContext().setAuthentication(authentication	);
-			}
-		} catch (Exception e) {
-			logger.error("cannot set User Authentication :{}",e.toString());
-		}
-		filterChain.doFilter(request, response);
-	}
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (Exception e) {
+            logger.error("cannot set User Authentication :{}", e.toString());
+        }
+        filterChain.doFilter(request, response);
+    }
 
 	private String parseJwt(HttpServletRequest request) {
 		String jwt = jwtUtils.getJwtFromHeader(request);

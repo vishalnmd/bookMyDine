@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -102,6 +101,5 @@ public class UserService implements IUserService {
             .map(UserMapper::toUserAuthResponse)
             .orElseThrow(() -> new ResourceNotFoundException(String.format("User not found for email : %s", email)));
     }
-
 
 }

@@ -112,8 +112,4 @@ public class AuthConfiguration {
         return config.getAuthenticationManager();
     }
 
-//    @Bean
-//    AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
-//    	return builder.getAuthenticationManager();
-//    	}
 }

@@ -38,7 +38,7 @@ public class UserController {
 
     private final IUserService userService;
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     @Operation(summary = "Create a new user", description = "Register a new user in the system")
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -84,7 +84,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable @NotNull(message = "Invalid Id") Long id) {
         LOG.info("Start getUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
@@ -96,7 +96,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PatchMapping("/user/{id}")
+    @PatchMapping("/users/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable @NotNull(message = "Invalid Id") Long id, @RequestBody UserRequest request) {
         LOG.info("Start updateUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
@@ -108,7 +108,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable @NotNull(message = "Invalid Id") Long id) {
         LOG.info("Start deleteUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()

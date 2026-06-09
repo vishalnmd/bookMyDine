@@ -26,13 +26,11 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        logger.info("Password for user: {}", user.getPassword());
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        logger.info("Username for user: {}", user.getEmail()    );
         return user.getEmail();
     }
 }

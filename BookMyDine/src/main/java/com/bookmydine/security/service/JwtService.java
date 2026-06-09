@@ -1,9 +1,6 @@
 package com.bookmydine.security.service;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +25,6 @@ public class JwtService {
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        logger.info("Authorization Header : {} ", bearerToken);
 
         if(bearerToken!=null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
@@ -38,9 +34,11 @@ public class JwtService {
 
     public String generateTokenFromUsername(UserDetails userDetails) {
         String username = userDetails.getUsername();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
         return Jwts.builder()
             .setSubject(username)
+            .claim("roles", role)
             .setIssuedAt(new Date())
             .setExpiration(new Date(new Date().getTime() + jwtExpirations))
             .signWith(key())
@@ -57,7 +55,6 @@ public class JwtService {
 
     public boolean validateJWTToken(String authToken) {
         try {
-            System.out.println("Validate");
             Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
             return true;
 
@@ -72,6 +69,14 @@ public class JwtService {
         }
 
         return false;
+    }
+
+    public Claims getClaimsFromJWTToken(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(key())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
 
