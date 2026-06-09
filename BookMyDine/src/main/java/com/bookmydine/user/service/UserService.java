@@ -1,5 +1,6 @@
 package com.bookmydine.user.service;
 
+import com.bookmydine.auth.dto.UserAuthResponse;
 import com.bookmydine.common.enums.UserStatus;
 import com.bookmydine.common.exception.ResourceAlreadyExistsException;
 import com.bookmydine.common.exception.ResourceAlreadyUpdatedException;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,10 +27,12 @@ public class UserService implements IUserService {
     public static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse addUser(UserRequest userRequest) {
         User user = UserMapper.toEntity(userRequest);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         try {
             userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -90,4 +94,12 @@ public class UserService implements IUserService {
         }
         return userResponses;
     }
+
+    @Override
+    public UserAuthResponse getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .map(UserMapper::toUserAuthResponse)
+            .orElseThrow(() -> new ResourceNotFoundException(String.format("User not found for email : %s", email)));
+    }
+
 }

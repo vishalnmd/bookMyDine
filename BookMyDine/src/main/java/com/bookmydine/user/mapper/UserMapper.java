@@ -1,9 +1,12 @@
 package com.bookmydine.user.mapper;
 
+import com.bookmydine.auth.dto.UserAuthResponse;
 import com.bookmydine.user.dto.UserRequest;
 import com.bookmydine.user.dto.UserResponse;
 import com.bookmydine.user.entity.User;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class UserMapper {
 
     public static User toEntity(UserRequest userRequest) {
@@ -35,5 +38,14 @@ public class UserMapper {
         user.setPhoneNumber(userRequest.getPhoneNumber()!=null ? userRequest.getPhoneNumber() : user.getPhoneNumber());
 
         return user;
+    }
+
+    public static UserAuthResponse toUserAuthResponse(User user){
+        log.info("UserMapper.toUserAuthResponse : {}", user);
+        return UserAuthResponse.builder()
+            .email(user.getEmail())
+            .password(user.getPassword())
+            .role(user.getRole())
+            .build();
     }
 }

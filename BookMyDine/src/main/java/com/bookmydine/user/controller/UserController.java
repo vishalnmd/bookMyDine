@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +38,7 @@ public class UserController {
 
     private final IUserService userService;
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     @Operation(summary = "Create a new user", description = "Register a new user in the system")
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -75,7 +84,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable @NotNull(message = "Invalid Id") Long id) {
         LOG.info("Start getUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
@@ -87,7 +96,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PatchMapping("/user/{id}")
+    @PatchMapping("/users/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable @NotNull(message = "Invalid Id") Long id, @RequestBody UserRequest request) {
         LOG.info("Start updateUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
@@ -99,7 +108,7 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable @NotNull(message = "Invalid Id") Long id) {
         LOG.info("Start deleteUserById:{}", id);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
