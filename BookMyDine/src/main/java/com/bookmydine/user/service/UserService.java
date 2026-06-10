@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,9 +43,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponse> getAllUsers(Pageable pageable) {
         List<UserResponse> userResponses = new ArrayList<>();
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(pageable).getContent();
         for (User user : users) {
             userResponses.add(UserMapper.toResponse(user));
         }
