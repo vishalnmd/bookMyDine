@@ -6,7 +6,6 @@ import com.bookmydine.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,17 +28,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthConfiguration {
     private final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
-	private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-	private final AuthEntryPointJWT unauthorizedHandler;
+    private final AuthEntryPointJWT unauthorizedHandler;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthTokenFilter authTokenFilter;
 
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-		http
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
             // ===== 1. CSRF PROTECTION =====
             // Disabled for JWT-based APIs (no cookies/sessions)
             .csrf(AbstractHttpConfigurer::disable)
@@ -70,6 +67,8 @@ public class AuthConfiguration {
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
 
                 // Admin endpoints - require ADMIN role
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -78,10 +77,10 @@ public class AuthConfiguration {
                 .anyRequest().authenticated()
             )
 
-        // ===== 6. HEADERS CONFIGURATION =====
+            // ===== 6. HEADERS CONFIGURATION =====
             .headers(headers -> headers
-            .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)  // For H2 Console
-        )
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)  // For H2 Console
+            )
 
             // ===== 7. EXCEPTION HANDLING =====
             .exceptionHandling(exception -> exception
@@ -95,7 +94,7 @@ public class AuthConfiguration {
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-	}
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

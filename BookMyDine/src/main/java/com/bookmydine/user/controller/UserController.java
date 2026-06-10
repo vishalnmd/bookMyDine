@@ -9,23 +9,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,9 +64,10 @@ public class UserController {
             description = "Users retrieved successfully"
         )
     })
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(@RequestParam(required = false, defaultValue = "10") int pageSize, @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         LOG.info("Start getAllUsers");
-        List<UserResponse> userResponseList = userService.getAllUsers();
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        List<UserResponse> userResponseList = userService.getAllUsers(pageable);
         ApiResponse<List<UserResponse>> response = ApiResponse.<List<UserResponse>>builder()
             .message(String.format("Successfully retrieved %d users", userResponseList.size()))
             .status(HttpStatus.OK)
