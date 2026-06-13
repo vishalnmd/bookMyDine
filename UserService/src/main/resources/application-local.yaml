@@ -1,0 +1,22 @@
+logging:
+  level:
+    root: INFO
+
+# Application server configuration
+#server:
+#  port: 8762
+
+# Eureka Client Configuration
+eureka:
+  client:
+    # Tells this service to register itself with the Eureka server
+    register-with-eureka: true
+    # Tells this service to fetch the registry of other services from Eureka
+    fetch-registry: true
+    # The URL of the Eureka Server to connect to
+    service-url:
+      defaultZone: <http://localhost:8761/eureka/>
+  instance:
+    # Prefer to use the service's IP address for registration instead of its hostname.
+    # This is often more reliable in containerized environments like Docker.
+    prefer-ip-address: true
