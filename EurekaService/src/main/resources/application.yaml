@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: EurekaService
+
+  profiles:
+    active: ${ENV:local}
