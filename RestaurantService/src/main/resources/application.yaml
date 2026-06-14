@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: RestaurantService
+
+    profile: ${ENV:local}
+
+  # PostgreSQL datasource configuration
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+
+  # JPA / Hibernate configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
