@@ -6,7 +6,7 @@ import com.bookmydine.user.entity.User;
 import jakarta.persistence.*;
 
 @Entity
-public class Restaurant extends BaseEntity {
+public class Restaurant2 extends BaseEntity {
 
     @Id
     @Column(nullable = false)
