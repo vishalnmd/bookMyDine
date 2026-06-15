@@ -1,4 +1,4 @@
-package com.userservice.user.common.config;
+package com.userservice.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

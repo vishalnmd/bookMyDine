@@ -12,4 +12,5 @@ public interface IRestaurantService {
     public List<RestaurantResponse> getAllRestaurant();
     public RestaurantResponse getRestaurantById(Long id);
     public RestaurantResponse updateRestaurantStatus(long restaurantId, Status status);
+    public List<RestaurantResponse> getRestaurantByOwnerId(long ownerId);
 }

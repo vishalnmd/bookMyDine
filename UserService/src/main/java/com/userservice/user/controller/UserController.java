@@ -1,6 +1,9 @@
 package com.userservice.user.controller;
 
 
+import com.userservice.client.RestaurantFeignClient;
+import com.userservice.user.dto.OwnerRestaurantResponse;
+import com.userservice.user.service.RestaurantService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.userservice.user.common.config.ApiResponse;
+import com.userservice.user.dto.ApiResponse;
 import com.userservice.user.common.enums.UserStatus;
 import com.userservice.user.dto.UserRequest;
 import com.userservice.user.dto.UserResponse;
@@ -78,6 +81,20 @@ public class UserController {
                 .timestamp(LocalDateTime.now())
                 .data(userService.updateUserById(id, request))
                 .build();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("{id}/restaurents")
+    public ResponseEntity<?> getRestaurantByOwnerId(@PathVariable @NotNull(message = "Invalid Owner Id") long id) {
+        LOG.info("Start getRestaurantByOwnerId:{}", id);
+        OwnerRestaurantResponse responseObj = userService.getOwnerRestaurantById(id);
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Successfully retrieved %d restaurants", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
