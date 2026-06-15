@@ -1,6 +1,8 @@
 package com.userservice.user.service;
 
 
+import com.userservice.user.dto.OwnerRestaurantResponse;
+import com.userservice.user.dto.RestaurantResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class UserService implements IUserService {
     public static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final RestaurantService restaurantService;
+
     @Override
     public UserResponse addUser(UserRequest userRequest) {
         User user = UserMapper.toEntity(userRequest);
@@ -90,6 +94,25 @@ public class UserService implements IUserService {
         userRepository.save(user);
 
         return UserMapper.toResponse(user);
+    }
+
+    @Override
+    public OwnerRestaurantResponse getOwnerRestaurantById(long ownerId) {
+        // 1. get owner details
+        User user = userRepository.findById(ownerId).orElseThrow(() -> new ResourceNotFoundException(String.format("User not found for id : %d", ownerId)));
+
+        // 2. get Restaurant list of the owner
+        List<RestaurantResponse> restaurantList = restaurantService.getAllRestaurantByOwnerId(ownerId);
+
+        return OwnerRestaurantResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole())
+                .restaurantList(restaurantList).build();
+
     }
 
 }

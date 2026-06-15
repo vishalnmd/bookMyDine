@@ -55,4 +55,11 @@ public class RestaurantController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/owner/{id}")
+    public ResponseEntity<?> getAllRestaurantsByOwnerId(@PathVariable("id") long id) {
+        logger.info("getAllRestaurantsByOwnerId");
+        List<RestaurantResponse> responseList = restaurantService.getRestaurantByOwnerId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
 }

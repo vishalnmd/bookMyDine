@@ -53,4 +53,10 @@ public class RestaurantService implements IRestaurantService {
         restaurantRepo.save(restaurant);
         return RestaurantMapper.toResponse(restaurant);
     }
+
+    @Override
+    public List<RestaurantResponse> getRestaurantByOwnerId(long ownerId) {
+        List<Restaurant> restaurants = restaurantRepo.findAllByOwnerId(ownerId);
+        return restaurants.stream().map(RestaurantMapper::toResponse).collect(Collectors.toList());
+    }
 }
