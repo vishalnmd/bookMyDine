@@ -14,12 +14,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/restaurants")
 public class RestaurantController {
 
     private final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
     private final IRestaurantService restaurantService;
 
-    @PostMapping("/restaurants")
+    @PostMapping
     public ResponseEntity<RestaurantResponse> saveRestaurant(@RequestBody RestaurantRequest request) {
         logger.info("saveRestaurant restaurant:{}", request);
 
