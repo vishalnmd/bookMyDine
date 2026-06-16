@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: ApiGatewayService
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          #lower-case-service-id: true
+      server:
+        webmvc:
+          routes:
+            - id: RESTAURANTSERVICE
+              uri: lb://RESTAURANTSERVICE
+              predicates:
+                - Path=/**
+              filters:
+             #   - StripPrefix=1
+
+            - id: USERSERVICE
+              uri: lb://USERSERVICE
+              predicates:
+                - Path=/users/**
+              filters:
+                #- StripPrefix=1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
