@@ -2,7 +2,8 @@ spring:
   application:
     name: UserService
 
-    profiles: ${ENV:local}
+    profiles:
+      active: ${ENV:local}
 
   # PostgreSQL datasource configuration
   datasource:
