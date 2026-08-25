@@ -2,7 +2,8 @@ spring:
   application:
     name: UserService
 
-    profiles: ${ENV:local}
+    profiles:
+      active: ${ENV:local}
 
   # PostgreSQL datasource configuration
   datasource:
@@ -20,4 +21,4 @@ spring:
 
 # Application server configuration
 server:
-  port: 8081
+  port: 8082
