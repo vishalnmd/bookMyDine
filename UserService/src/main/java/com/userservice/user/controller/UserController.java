@@ -2,8 +2,11 @@ package com.userservice.user.controller;
 
 
 import com.userservice.client.RestaurantFeignClient;
+import com.userservice.user.common.enums.Roles;
 import com.userservice.user.dto.OwnerRestaurantResponse;
+import com.userservice.user.entity.User;
 import com.userservice.user.service.RestaurantService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import com.userservice.user.dto.UserResponse;
 import com.userservice.user.service.interfaces.IUserService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -85,11 +89,34 @@ public class UserController {
     }
 
     @GetMapping("{id}/restaurents")
+    @CircuitBreaker(name = "getResturantOwnerBreaker",fallbackMethod = "getRestaurantByOwnerIdFallBack")
     public ResponseEntity<?> getRestaurantByOwnerId(@PathVariable @NotNull(message = "Invalid Owner Id") long id) {
         LOG.info("Start getRestaurantByOwnerId:{}", id);
         OwnerRestaurantResponse responseObj = userService.getOwnerRestaurantById(id);
         ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
                 .message(String.format("Successfully retrieved %d restaurants", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    public ResponseEntity<?> getRestaurantByOwnerIdFallBack(@PathVariable @NotNull(message = "Invalid Owner Id") long id,Exception ex) {
+        LOG.info("Start getRestaurantByOwnerIdFallBack:{}", id);
+        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
+                .firstName("unknown")
+                .lastName("unknown")
+                .email("unknown")
+                .phoneNumber("unknown")
+                .id(0l)
+                .role(Roles.USER)
+                .restaurantList(Collections.emptyList())
+                .build();
+
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
                 .status(HttpStatus.OK)
                 .timestamp(LocalDateTime.now())
                 .data(responseObj)

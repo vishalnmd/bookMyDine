@@ -66,6 +66,7 @@ public class AuthConfiguration {
                 .requestMatchers("/api/auth/**").permitAll()  // Register/Login
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()

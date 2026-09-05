@@ -55,7 +55,14 @@ public class UserService implements IUserService {
     @Override
     public List<UserResponse> getAllUsers(UserStatus userStatus, Pageable pageable) {
         List<UserResponse> userResponses = new ArrayList<>();
-        List<User> users = userRepository.findAllByStatus(userStatus, pageable);
+
+        List<User> users;
+        if (userStatus != null) {
+            users = userRepository.findAllByStatus(userStatus, pageable);
+        } else {
+            users = userRepository.findAll(pageable).getContent();
+        }
+
         for (User user : users) {
             userResponses.add(UserMapper.toResponse(user));
         }
