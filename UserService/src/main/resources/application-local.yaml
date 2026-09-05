@@ -20,3 +20,4 @@ eureka:
     # Prefer to use the service's IP address for registration instead of its hostname.
     # This is often more reliable in containerized environments like Docker.
     prefer-ip-address: true
+
