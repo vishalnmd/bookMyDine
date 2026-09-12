@@ -48,4 +48,16 @@ resilience4j:
           seconds: 45
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
+<<<<<<< Updated upstream
         sliding-window-type: COUNT_BASED
+=======
+        sliding-window-type: COUNT_BASED
+  
+  retry:
+    instances:
+      getResturantOwnerRetry:
+        max-attempts: 3
+        wait-duration: 2S
+  
+    
+>>>>>>> Stashed changes
