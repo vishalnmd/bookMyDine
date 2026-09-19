@@ -164,10 +164,8 @@ public class UserController {
     }
 
     @GetMapping("{id}/restaurentsV3")
-//    @Retry(name = "getResturantOwnerRetry",fallbackMethod = "getRestaurantByOwnerIdV3Retry")
-//    @CircuitBreaker(name = "getResturantOwnerBreaker",fallbackMethod = "getRestaurantByOwnerIdV3Breaker")
     @Retry(name = "getResturantOwnerRetry",fallbackMethod = "getRestaurantByOwnerIdV2FallBack")
-    @CircuitBreaker(name = "getResturantOwnerBreaker",fallbackMethod = "getRestaurantByOwnerIdFallBack")
+    @CircuitBreaker(name = "getResturantOwnerBreaker")
     public ResponseEntity<?> getRestaurantByOwnerIdV3(@PathVariable @NotNull(message = "Invalid Owner Id") long id) {
         LOG.info("Start getRestaurantByOwnerIdV3:{}", id);
         OwnerRestaurantResponse responseObj = userService.getOwnerRestaurantById(id);

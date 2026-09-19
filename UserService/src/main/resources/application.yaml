@@ -49,8 +49,10 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
+    circuit-breaker-aspect-order: 2
         
   retry:
+    retry-aspect-order: 1
     instances:
       getResturantOwnerRetry:
         max-attempts: 3
