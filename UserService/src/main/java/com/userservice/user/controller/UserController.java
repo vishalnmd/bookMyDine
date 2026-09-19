@@ -7,6 +7,7 @@ import com.userservice.user.dto.OwnerRestaurantResponse;
 import com.userservice.user.entity.User;
 import com.userservice.user.service.RestaurantService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -105,6 +106,43 @@ public class UserController {
 
     public ResponseEntity<?> getRestaurantByOwnerIdFallBack(@PathVariable @NotNull(message = "Invalid Owner Id") long id,Exception ex) {
         LOG.info("Start getRestaurantByOwnerIdFallBack:{}", id);
+        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
+                .firstName("unknown")
+                .lastName("unknown")
+                .email("unknown")
+                .phoneNumber("unknown")
+                .id(0l)
+                .role(Roles.USER)
+                .restaurantList(Collections.emptyList())
+                .build();
+
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("{id}/restaurentsV2")
+    @Retry(name = "getResturantOwnerRetry",fallbackMethod = "getRestaurantByOwnerIdV2FallBack")
+    public ResponseEntity<?> getRestaurantByOwnerIdV2(@PathVariable @NotNull(message = "Invalid Owner Id") long id) {
+        LOG.info("Start getRestaurantByOwnerIdV2:{}", id);
+        OwnerRestaurantResponse responseObj = userService.getOwnerRestaurantById(id);
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Successfully retrieved %d restaurants", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    public ResponseEntity<?> getRestaurantByOwnerIdV2FallBack(@PathVariable @NotNull(message = "Invalid Owner Id") long id,Exception ex) {
+        LOG.info("Start getRestaurantByOwnerIdV2FallBack:{}", id);
         OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
                 .firstName("unknown")
                 .lastName("unknown")
