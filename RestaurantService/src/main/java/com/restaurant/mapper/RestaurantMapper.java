@@ -18,6 +18,7 @@ public class RestaurantMapper {
                 .restaurantStatus(restaurantRequest.getRestaurantStatus())
                 .contactNo(restaurantRequest.getContactNo())
                 .status(restaurantRequest.getStatus())
+                .totalCapacity(restaurantRequest.getTotalCapacity())
                 .build();
     }
 
@@ -33,6 +34,7 @@ public class RestaurantMapper {
                 .restaurantStatus(restaurant.getRestaurantStatus())
                 .contactNo(restaurant.getContactNo())
                 .status(restaurant.getStatus())
+                .totalCapacity(restaurant.getTotalCapacity())
                 .build();
     }
 }
