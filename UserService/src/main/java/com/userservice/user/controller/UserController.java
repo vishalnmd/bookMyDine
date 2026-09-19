@@ -105,7 +105,7 @@ public class UserController {
     }
 
     public ResponseEntity<?> getRestaurantByOwnerIdFallBack(@PathVariable @NotNull(message = "Invalid Owner Id") long id,Exception ex) {
-        LOG.info("Start getRestaurantByOwnerIdFallBack:{}", id);
+        LOG.info("Start (Breaker) getRestaurantByOwnerIdFallBack:{}", id);
         OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
                 .firstName("unknown")
                 .lastName("unknown")
@@ -142,7 +142,74 @@ public class UserController {
     }
 
     public ResponseEntity<?> getRestaurantByOwnerIdV2FallBack(@PathVariable @NotNull(message = "Invalid Owner Id") long id,Exception ex) {
-        LOG.info("Start getRestaurantByOwnerIdV2FallBack:{}", id);
+        LOG.info("Start (Retry) getRestaurantByOwnerIdV2FallBack:{}", id);
+        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
+                .firstName("unknown")
+                .lastName("unknown")
+                .email("unknown")
+                .phoneNumber("unknown")
+                .id(0l)
+                .role(Roles.USER)
+                .restaurantList(Collections.emptyList())
+                .build();
+
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("{id}/restaurentsV3")
+//    @Retry(name = "getResturantOwnerRetry",fallbackMethod = "getRestaurantByOwnerIdV3Retry")
+//    @CircuitBreaker(name = "getResturantOwnerBreaker",fallbackMethod = "getRestaurantByOwnerIdV3Breaker")
+    @Retry(name = "getResturantOwnerRetry",fallbackMethod = "getRestaurantByOwnerIdV2FallBack")
+    @CircuitBreaker(name = "getResturantOwnerBreaker",fallbackMethod = "getRestaurantByOwnerIdFallBack")
+    public ResponseEntity<?> getRestaurantByOwnerIdV3(@PathVariable @NotNull(message = "Invalid Owner Id") long id) {
+        LOG.info("Start getRestaurantByOwnerIdV3:{}", id);
+        OwnerRestaurantResponse responseObj = userService.getOwnerRestaurantById(id);
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Successfully retrieved %d restaurants", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    public ResponseEntity<?> getRestaurantByOwnerIdV3Retry(long id, Throwable ex) {
+        LOG.info("Start getRestaurantByOwnerIdV3Retry:{}", id);
+
+        LOG.error("Fallback for getRestaurantByOwnerIdV3Retry. ownerId: {}", id, ex);
+
+        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
+                .firstName("unknown")
+                .lastName("unknown")
+                .email("unknown")
+                .phoneNumber("unknown")
+                .id(0l)
+                .role(Roles.USER)
+                .restaurantList(Collections.emptyList())
+                .build();
+
+        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
+                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
+                .status(HttpStatus.OK)
+                .timestamp(LocalDateTime.now())
+                .data(responseObj)
+                .build();
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    public ResponseEntity<?> getRestaurantByOwnerIdV3Breaker(long id, Throwable ex) {
+        LOG.info("Start getRestaurantByOwnerIdV3Breaker:{}", id);
+
+        LOG.error("Fallback for getRestaurantByOwnerIdV3Breaker. ownerId: {}", id, ex);
+
         OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
                 .firstName("unknown")
                 .lastName("unknown")
