@@ -25,4 +25,5 @@ public class RestaurantRequest{
     private LocalTime closingTime;
     private String contactNo;
     private Status status;
+    private int totalCapacity;
 }
