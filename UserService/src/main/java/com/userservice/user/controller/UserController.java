@@ -7,6 +7,7 @@ import com.userservice.user.dto.OwnerRestaurantResponse;
 import com.userservice.user.entity.User;
 import com.userservice.user.service.RestaurantService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -179,53 +180,28 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    public ResponseEntity<?> getRestaurantByOwnerIdV3Retry(long id, Throwable ex) {
-        LOG.info("Start getRestaurantByOwnerIdV3Retry:{}", id);
-
-        LOG.error("Fallback for getRestaurantByOwnerIdV3Retry. ownerId: {}", id, ex);
-
-        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
-                .firstName("unknown")
-                .lastName("unknown")
-                .email("unknown")
-                .phoneNumber("unknown")
-                .id(0l)
-                .role(Roles.USER)
-                .restaurantList(Collections.emptyList())
-                .build();
-
-        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
-                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
+    @GetMapping("/v2")
+    @RateLimiter(name = "getAllUserv2Limiter" , fallbackMethod = "getAllUsersV2Fallback")
+    public ResponseEntity<?> getAllUsersV2(@RequestParam(required = false, defaultValue = "10") int pageSize, @RequestParam(required = false, defaultValue = "1") int pageNumber, @RequestParam(required = false) UserStatus status) {
+        LOG.info("Start getAllUsers");
+        pageSize = Math.max(pageSize, 1000);
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        List<UserResponse> userResponseList = userService.getAllUsers(status, pageable);
+        ApiResponse<List<UserResponse>> response = ApiResponse.<List<UserResponse>>builder()
+                .message(String.format("Successfully retrieved %d users", userResponseList.size()))
                 .status(HttpStatus.OK)
                 .timestamp(LocalDateTime.now())
-                .data(responseObj)
+                .data(userResponseList)
                 .build();
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    public ResponseEntity<?> getRestaurantByOwnerIdV3Breaker(long id, Throwable ex) {
-        LOG.info("Start getRestaurantByOwnerIdV3Breaker:{}", id);
 
-        LOG.error("Fallback for getRestaurantByOwnerIdV3Breaker. ownerId: {}", id, ex);
+    public ResponseEntity<?> getAllUsersV2Fallback(int pageSize, int pageNumber, UserStatus status,Exception ex) {
+        LOG.info("Start getAllUsersV2Fallback");
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("{\"returnMsg\":\" api Rate limit exceeded! \"}");
 
-        OwnerRestaurantResponse responseObj = OwnerRestaurantResponse.builder()
-                .firstName("unknown")
-                .lastName("unknown")
-                .email("unknown")
-                .phoneNumber("unknown")
-                .id(0l)
-                .role(Roles.USER)
-                .restaurantList(Collections.emptyList())
-                .build();
-
-        ApiResponse<OwnerRestaurantResponse> response = ApiResponse.<OwnerRestaurantResponse>builder()
-                .message(String.format("Temporary facing issue with service!", responseObj.getRestaurantList().size()))
-                .status(HttpStatus.OK)
-                .timestamp(LocalDateTime.now())
-                .data(responseObj)
-                .build();
-
-        return ResponseEntity.status(response.getStatus()).body(response);
     }
+
 
 }

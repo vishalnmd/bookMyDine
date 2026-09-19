@@ -57,3 +57,10 @@ resilience4j:
       getResturantOwnerRetry:
         max-attempts: 3
         wait-duration: 2S
+        
+  ratelimiter:
+    instances:
+      getAllUserv2Limiter:
+        limit-refresh-period: 30s
+        limit-for-period: 2
+        timeout-duration: 0s
