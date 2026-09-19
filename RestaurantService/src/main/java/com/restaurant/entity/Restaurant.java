@@ -50,4 +50,7 @@ public class Restaurant extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = Status.ACTIVE;
+
+    @Column(nullable = false)
+    private int totalCapacity;
 }
